@@ -7,8 +7,7 @@ export default {
 		const tag = new Tag.String("my_string", "Hello, world!");
 		const length = tag.size();
 
-		if(!assert_eq(length, 5 + tag.name.length + tag.payload.length, "Failed Tag.String [full] length equality"))
-			return false;
+		assert_eq(length, 5 + tag.name.length + tag.payload.length, "Failed Tag.String [full] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(true, buf);
@@ -19,20 +18,14 @@ export default {
 			0, 13, 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.String [full] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.String [full] buffer equality");
 	},
 
 	encode_no_type() {
 		const tag = new Tag.String("my_string", "Hello, world!");
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 4 + tag.name.length + tag.payload.length, "Failed Tag.String [no_type] length equality"))
-			return false;
+		assert_eq(length, 4 + tag.name.length + tag.payload.length, "Failed Tag.String [no_type] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -42,20 +35,14 @@ export default {
 			0, 13, 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.String [no_type] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.String [no_type] buffer equality");
 	},
 
 	encode_min() {
 		const tag = new Tag.String(null, "Hello, world!");
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 2 + tag.payload.length, "Failed Tag.String [min] length equality"))
-			return false;
+		assert_eq(length, 2 + tag.payload.length, "Failed Tag.String [min] length equality");
 
 		const buf = Buffer.alloc(length);
 
@@ -65,20 +52,14 @@ export default {
 			0, 13, 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.String [min] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.String [min] buffer equality");
 	},
 
 	encode_empty() {
 		const tag = new Tag.String(null, "");
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 2, "Failed Tag.String [empty] length equality"))
-			return false;
+		assert_eq(length, 2, "Failed Tag.String [empty] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -87,11 +68,6 @@ export default {
 			0, 0 // Payload (length only)
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.String [empty] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.String [empty] buffer equality");
 	}
 };

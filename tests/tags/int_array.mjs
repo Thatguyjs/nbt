@@ -7,8 +7,7 @@ export default {
 		const tag = new Tag.IntArray("my_int_array", [-17, 42, 2147483647, -2147483648]);
 		const length = tag.size(true);
 
-		if(!assert_eq(length, 7 + tag.name.length + tag.payload.length * 4, "Failed Tag.IntArray [full] length equality"))
-			return false;
+		assert_eq(length, 7 + tag.name.length + tag.payload.length * 4, "Failed Tag.IntArray [full] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(true, buf);
@@ -19,20 +18,14 @@ export default {
 			0, 0, 0, 4, 255, 255, 255, 239, 0, 0, 0, 42, 127, 255, 255, 255, 128, 0, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.IntArray [full] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.IntArray [full] buffer equality");
 	},
 
 	encode_no_type() {
 		const tag = new Tag.IntArray("my_int_array", [-17, 42, 2147483647, -2147483648]);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 6 + tag.name.length + tag.payload.length * 4, "Failed Tag.IntArray [no_type] length equality"))
-			return false;
+		assert_eq(length, 6 + tag.name.length + tag.payload.length * 4, "Failed Tag.IntArray [no_type] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -42,20 +35,14 @@ export default {
 			0, 0, 0, 4, 255, 255, 255, 239, 0, 0, 0, 42, 127, 255, 255, 255, 128, 0, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.IntArray [no_type] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.IntArray [no_type] buffer equality");
 	},
 
 	encode_min() {
 		const tag = new Tag.IntArray(null, [-17, 42, 2147483647, -2147483648]);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 4 + tag.payload.length * 4, "Failed Tag.IntArray [min] length equality"))
-			return false;
+		assert_eq(length, 4 + tag.payload.length * 4, "Failed Tag.IntArray [min] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -64,20 +51,14 @@ export default {
 			0, 0, 0, 4, 255, 255, 255, 239, 0, 0, 0, 42, 127, 255, 255, 255, 128, 0, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.IntArray [min] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.IntArray [min] buffer equality");
 	},
 
 	encode_empty() {
 		const tag = new Tag.IntArray(null, []);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 4, "Failed Tag.IntArray [empty] length equality"))
-			return false;
+		assert_eq(length, 4, "Failed Tag.IntArray [empty] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -86,11 +67,6 @@ export default {
 			0, 0, 0, 0 // Payload (length only)
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.IntArray [empty] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.IntArray [empty] buffer equality");
 	}
 };

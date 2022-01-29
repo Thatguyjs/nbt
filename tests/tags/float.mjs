@@ -7,8 +7,7 @@ export default {
 		const tag = new Tag.Float("my_float", 2147483647);
 		const length = tag.size();
 
-		if(!assert_eq(length, 7 + tag.name.length, "Failed Tag.Float [full_positive] length equality"))
-			return false;
+		assert_eq(length, 7 + tag.name.length, "Failed Tag.Float [full_positive] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(true, buf);
@@ -19,20 +18,14 @@ export default {
 			79, 0, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Float [full_positive] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Float [full_positive] buffer equality");
 	},
 
 	encode_full_negative() {
 		const tag = new Tag.Float("my_float", -2147483648);
 		const length = tag.size();
 
-		if(!assert_eq(length, 7 + tag.name.length, "Failed Tag.Float [full_negative] length equality"))
-			return false;
+		assert_eq(length, 7 + tag.name.length, "Failed Tag.Float [full_negative] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(true, buf);
@@ -43,20 +36,14 @@ export default {
 			207, 0, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Float [full_negative] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Float [full_negative] buffer equality");
 	},
 
 	encode_no_type() {
 		const tag = new Tag.Float("my_float", 17.5);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 6 + tag.name.length, "Failed Tag.Float [no_type] length equality"))
-			return false;
+		assert_eq(length, 6 + tag.name.length, "Failed Tag.Float [no_type] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -66,20 +53,14 @@ export default {
 			65, 140, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Float [no_type] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Float [no_type] buffer equality");
 	},
 
 	encode_min() {
 		const tag = new Tag.Float(null, 42.5);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 4, "Failed Tag.Float [min] length equality"))
-			return false;
+		assert_eq(length, 4, "Failed Tag.Float [min] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -88,11 +69,6 @@ export default {
 			66, 42, 0, 0 // Payload
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Float [min] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Float [min] buffer equality");
 	}
 };

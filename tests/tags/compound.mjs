@@ -7,8 +7,7 @@ export default {
 		const tag = new Tag.Compound("my_compound", [new Tag.Int("my_int", 42), new Tag.List("my_list", Tag.String, ["first item", "second item"])]);
 		const length = tag.size(true);
 
-		if(!assert_eq(length, 3 + tag.name.length + 13 + 40 + 1, "Failed Tag.Compound [full] length equality"))
-			return false;
+		assert_eq(length, 3 + tag.name.length + 13 + 40 + 1, "Failed Tag.Compound [full] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(true, buf);
@@ -22,20 +21,14 @@ export default {
 			0 // End tag
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [full] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Compound [full] buffer equality");
 	},
 
 	encode_no_type() {
 		const tag = new Tag.Compound("my_compound", [new Tag.Int("my_int", 42), new Tag.List("my_list", Tag.String, ["first item", "second item"])]);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 2 + tag.name.length + 13 + 40 + 1, "Failed Tag.Compound [no_type] length equality"))
-			return false;
+		assert_eq(length, 2 + tag.name.length + 13 + 40 + 1, "Failed Tag.Compound [no_type] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -48,20 +41,14 @@ export default {
 			0 // End tag
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [no_type] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Compound [no_type] buffer equality");
 	},
 
 	encode_min() {
 		const tag = new Tag.Compound(null, [new Tag.Int("my_int", 42), new Tag.List("my_list", Tag.String, ["first item", "second item"])]);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 13 + 40 + 1, "Failed Tag.Compound [min] length equality"))
-			return false;
+		assert_eq(length, 13 + 40 + 1, "Failed Tag.Compound [min] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -73,20 +60,14 @@ export default {
 			0 // End tag
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [min] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Compound [min] buffer equality");
 	},
 
 	encode_empty() {
 		const tag = new Tag.Compound(null, []);
 		const length = tag.size(false);
 
-		if(!assert_eq(length, 1, "Failed Tag.Compound [empty] length equality"))
-			return false;
+		assert_eq(length, 1, "Failed Tag.Compound [empty] length equality");
 
 		const buf = Buffer.alloc(length);
 		tag.write(false, buf);
@@ -95,11 +76,6 @@ export default {
 			0, // Payload (end tag)
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [empty] buffer equality")) {
-			console.log(buf, expected);
-			return false;
-		}
-
-		return true;
+		assert_eq_iter(buf, expected, "Failed Tag.Compound [empty] buffer equality");
 	}
 };

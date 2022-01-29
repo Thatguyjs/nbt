@@ -1,6 +1,12 @@
 // https://wiki.vg/NBT#Specification
 
 
+function buffer_read_name(buffer, offset) {
+	const length = buffer.readUint16BE(offset);
+	offset += 2;
+	return [buffer.subarray(offset, offset + length).toString(), offset + length];
+}
+
 function write_name(name, buffer, offset) {
 	offset = buffer.writeUint16BE(name.length, offset);
 	return offset + buffer.write(name, offset);
@@ -65,7 +71,21 @@ function class_from_type(type) {
 
 
 const Tag = {
+	// Read the next tag from a buffer
+	read_tag: function(buffer, offset=0, read_type=true, read_name=true) {
+		const tag_class = class_from_type(buffer[offset]);
+		if(!tag_class) return null;
+
+		return tag_class.read(buffer, offset, read_type, read_name);
+	},
+
+
 	End: class {
+		static read(buffer, offset=0) {
+			if(buffer[offset] !== 0) return null;
+			return [new Tag.End(), ++offset];
+		}
+
 		write(buffer, offset=0) {
 			return buffer.writeUint8(0, offset);
 		}
@@ -82,6 +102,16 @@ const Tag = {
 		constructor(name, payload) {
 			this.name = name;
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 1) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = buffer.readInt8(offset);
+
+			return [new Tag.Byte(name, payload), offset + 1];
 		}
 
 		write(write_type, buffer, offset=0) {
@@ -108,6 +138,16 @@ const Tag = {
 			this.payload = payload;
 		}
 
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 2) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = buffer.readInt16BE(offset);
+
+			return [new Tag.Short(name, payload), offset + 2];
+		}
+
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(2, offset);
 			if(this.name) offset = write_name(this.name, buffer, offset);
@@ -130,6 +170,16 @@ const Tag = {
 		constructor(name, payload) {
 			this.name = name;
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 3) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = buffer.readInt32BE(offset);
+
+			return [new Tag.Int(name, payload), offset + 4];
 		}
 
 		write(write_type, buffer, offset=0) {
@@ -156,6 +206,16 @@ const Tag = {
 			this.payload = payload;
 		}
 
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 4) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = buffer.readBigInt64BE(offset);
+
+			return [new Tag.Long(name, payload), offset + 8];
+		}
+
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(4, offset);
 			if(this.name) offset = write_name(this.name, buffer, offset);
@@ -178,6 +238,16 @@ const Tag = {
 		constructor(name, payload) {
 			this.name = name;
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 5) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = buffer.readFloatBE(offset);
+
+			return [new Tag.Float(name, payload), offset + 4];
 		}
 
 		write(write_type, buffer, offset=0) {
@@ -204,6 +274,16 @@ const Tag = {
 			this.payload = payload;
 		}
 
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 6) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = buffer.readDoubleBE(offset);
+
+			return [new Tag.Double(name, payload), offset + 8];
+		}
+
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(6, offset);
 			if(this.name) offset = write_name(this.name, buffer, offset);
@@ -224,13 +304,23 @@ const Tag = {
 		payload = null;
 
 		constructor(name, payload) {
-			if(!Buffer.isBuffer(payload)) {
-				console.warn(`Payload "${payload}" is not a Buffer. The default conversion may lose data!`);
+			if(!Buffer.isBuffer(payload))
 				payload = Buffer.from(payload);
-			}
 
 			this.name = name;
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 7) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+
+			const length = buffer.readInt32BE(offset);
+			const payload = buffer.subarray(offset + 4, offset + 4 + length);
+
+			return [new Tag.ByteArray(name, payload), offset + 4 + length];
 		}
 
 		write(write_type, buffer, offset=0) {
@@ -261,6 +351,18 @@ const Tag = {
 
 			this.name = name;
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 8) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+
+			const length = buffer.readUint16BE(offset);
+			const payload = buffer.subarray(offset + 2, offset + 2 + length).toString();
+
+			return [new Tag.String(name, payload), offset + 2 + length];
 		}
 
 		write(write_type, buffer, offset=0) {
@@ -308,6 +410,29 @@ const Tag = {
 			this.payload = payload;
 		}
 
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 9) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+
+			const tag_class = class_from_type(buffer.readUint8(offset++));
+			const length = buffer.readInt32BE(offset);
+			offset += 4;
+
+			let payload = [];
+
+			for(let i = 0; i < length; i++) {
+				let next = tag_class.read(buffer, offset, false, false);
+				if(!next) return null;
+
+				payload.push(next[0]);
+				offset = next[1];
+			}
+
+			return [new Tag.List(name, tag_class, payload), offset];
+		}
+
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(9, offset);
 			if(this.name) offset = write_name(this.name, buffer, offset);
@@ -335,7 +460,7 @@ const Tag = {
 		payload = [];
 
 		constructor(name, payload) {
-			if(typeof payload !== 'object')
+			if(typeof payload !== 'object') // Arrays are objects too
 				console.warn(`Payload "${payload}" is not an Object. The default conversion may lose data!`);
 
 			this.name = name;
@@ -348,6 +473,24 @@ const Tag = {
 			}
 
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 10) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+			let payload = [];
+
+			while(buffer[offset] !== 0) {
+				let next = Tag.read_tag(buffer, offset);
+				if(!next) return null;
+
+				payload.push(next[0]);
+				offset = next[1];
+			}
+
+			return [new Tag.Compound(name, payload), offset + 1];
 		}
 
 		write(write_type, buffer, offset=0) {
@@ -386,6 +529,23 @@ const Tag = {
 			this.payload = payload;
 		}
 
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 11) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+
+			const length = buffer.readInt32BE(offset);
+			let payload = [];
+
+			for(let i = 0; i < length; i++) {
+				offset += 4;
+				payload.push(buffer.readInt32BE(offset));
+			}
+
+			return [new Tag.IntArray(name, payload), offset + 4];
+		}
+
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(11, offset);
 			if(this.name) offset = write_name(this.name, buffer, offset);
@@ -422,6 +582,23 @@ const Tag = {
 					payload[p] = BigInt(payload[p]);
 
 			this.payload = payload;
+		}
+
+		static read(buffer, offset=0, read_type=true, read_name=true) {
+			if(read_type && buffer[offset++] !== 12) return null;
+
+			let name;
+			if(read_name) [name, offset] = buffer_read_name(buffer, offset);
+
+			const length = buffer.readInt32BE(offset);
+			let payload = [];
+
+			for(let i = 0; i < length; i++) {
+				offset += 8;
+				payload.push(buffer.readBigInt64BE(offset));
+			}
+
+			return [new Tag.LongArray(name, payload), offset + 8];
 		}
 
 		write(write_type, buffer, offset=0) {

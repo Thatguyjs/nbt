@@ -22,7 +22,9 @@ const loading = [
 	load_tests("tags/list.mjs"),
 	load_tests("tags/compound.mjs"),
 	load_tests("tags/int_array.mjs"),
-	load_tests("tags/long_array.mjs")
+	load_tests("tags/long_array.mjs"),
+
+	load_tests("file/read.mjs")
 ];
 
 
@@ -40,15 +42,11 @@ for(let g in Tests) {
 	for(let t in Tests[g]) {
 		try {
 			group_total++;
-
-			if(!Tests[g][t]()) {
-				console.error(`Test failed: "${g}/${t}"`);
-				group_failed++;
-			}
+			Tests[g][t]();
 		}
 		catch(err) {
-			console.error("\nCaught Test Error:");
-			console.error(err);
+			console.error(`Test failed - "${g}/${t}": ${err.message}`);
+			group_failed++;
 		}
 	}
 
@@ -61,4 +59,4 @@ for(let g in Tests) {
 		console.info(`${group_failed} of ${group_total} tests failed for group: ${g}`);
 }
 
-console.info(`\n${total_ran} tests finished, ${total_failed} tests failed`);
+console.info(`\n${total_ran} tests finished, ${total_failed} test${total_failed !== 1 ? 's' : ''} failed`);
