@@ -1,6 +1,3 @@
-import { Tag } from "../src/lib.mjs";
-
-
 const Tests = {};
 
 async function load_tests(filepath) {
@@ -24,8 +21,8 @@ const loading = [
 	load_tests("tags/string.mjs"),
 	load_tests("tags/list.mjs"),
 	// load_tests("tags/compound.mjs"),
-	// load_tests("tags/int_array.mjs"),
-	// load_tests("tags/long_array.mjs")
+	load_tests("tags/int_array.mjs"),
+	load_tests("tags/long_array.mjs")
 ];
 
 

@@ -357,7 +357,7 @@ const Tag = {
 			for(let p in this.payload)
 				offset = this.payload[p].write(true, buffer, offset);
 
-			return offset;
+			return buffer.writeUint8(0, offset);
 		}
 
 		size(type=true) {
@@ -374,7 +374,7 @@ const Tag = {
 
 	IntArray: class {
 		name = "";
-		payload = [];
+		payload = null;
 
 		constructor(name, payload) {
 			if(!Array.isArray(payload)) {
@@ -384,14 +384,30 @@ const Tag = {
 
 			this.name = name;
 			this.payload = payload;
+		}
 
-			console.error("TODO: IntArray tag");
+		write(write_type, buffer, offset=0) {
+			if(write_type) offset = buffer.writeUint8(11, offset);
+			if(this.name) offset = write_name(this.name, buffer, offset);
+
+			offset = buffer.writeInt32BE(this.payload.length, offset);
+			for(let p in this.payload)
+				offset = buffer.writeInt32BE(this.payload[p], offset);
+
+			return offset;
+		}
+
+		size(type=true) {
+			let header = type ? 1 : 0;
+			if(this.name) header += 2 + this.name.length;
+
+			return header + 4 + this.payload.length * 4;
 		}
 	},
 
 	LongArray: class {
 		name = "";
-		payload = [];
+		payload = null;
 
 		constructor(name, payload) {
 			if(!Array.isArray(payload)) {
@@ -400,9 +416,30 @@ const Tag = {
 			}
 
 			this.name = name;
-			this.payload = payload;
 
-			console.error("TODO: LongArray tag");
+			for(let p in payload)
+				if(!(payload[p] instanceof BigInt))
+					payload[p] = BigInt(payload[p]);
+
+			this.payload = payload;
+		}
+
+		write(write_type, buffer, offset=0) {
+			if(write_type) offset = buffer.writeUint8(12, offset);
+			if(this.name) offset = write_name(this.name, buffer, offset);
+
+			offset = buffer.writeInt32BE(this.payload.length, offset);
+			for(let p in this.payload)
+				offset = buffer.writeBigInt64BE(this.payload[p], offset);
+
+			return offset;
+		}
+
+		size(type=true) {
+			let header = type ? 1 : 0;
+			if(this.name) header += 2 + this.name.length;
+
+			return header + 4 + this.payload.length * 8;
 		}
 	}
 };
