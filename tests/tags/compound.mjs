@@ -1,21 +1,101 @@
-import { assert_eq_iter } from "../utils.mjs";
+import { assert_eq, assert_eq_iter } from "../utils.mjs";
 import { Tag } from "../../src/lib.mjs";
 
 
 export default {
 	encode_full() {
-		const tag = new Tag.String("my_string", "Hello, world!");
-		const buf = Buffer.alloc(5 + tag.name.length + tag.payload.length);
+		const tag = new Tag.Compound("my_compound", [new Tag.Int("my_int", 42), new Tag.List("my_list", Tag.String, ["first item", "second item"])]);
+		const length = tag.size(true);
 
+		if(!assert_eq(length, 3 + tag.name.length + 13 + 40 + 1, "Failed Tag.Compound [full] length equality"))
+			return false;
+
+		const buf = Buffer.alloc(length);
 		tag.write(true, buf);
 
 		const expected = Buffer.from([
-			8, // Type
-			0, 9, 109, 121, 95, 115, 116, 114, 105, 110, 103, // Name
-			0, 13, 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33 // Payload
+			10, // Type
+			0, 11, 109, 121, 95, 99, 111, 109, 112, 111, 117, 110, 100, // Name
+			3, 0, 6, 109, 121, 95, 105, 110, 116, 0, 0, 0, 42, // Payload (int)
+			9, 0, 7, 109, 121, 95, 108, 105, 115, 116, 8, 0, 0, 0, 2, // Payload (list header)
+			0, 10, 102, 105, 114, 115, 116, 32, 105, 116, 101, 109, 0, 11, 115, 101, 99, 111, 110, 100, 32, 105, 116, 101, 109, // Payload (list data)
+			0 // End tag
 		]);
 
-		if(!assert_eq_iter(buf, expected, "Failed Tag.String [full] buffer equality")) {
+		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [full] buffer equality")) {
+			console.log(buf, expected);
+			return false;
+		}
+
+		return true;
+	},
+
+	encode_no_type() {
+		const tag = new Tag.Compound("my_compound", [new Tag.Int("my_int", 42), new Tag.List("my_list", Tag.String, ["first item", "second item"])]);
+		const length = tag.size(false);
+
+		if(!assert_eq(length, 2 + tag.name.length + 13 + 40 + 1, "Failed Tag.Compound [no_type] length equality"))
+			return false;
+
+		const buf = Buffer.alloc(length);
+		tag.write(false, buf);
+
+		const expected = Buffer.from([
+			0, 11, 109, 121, 95, 99, 111, 109, 112, 111, 117, 110, 100, // Name
+			3, 0, 6, 109, 121, 95, 105, 110, 116, 0, 0, 0, 42, // Payload (int)
+			9, 0, 7, 109, 121, 95, 108, 105, 115, 116, 8, 0, 0, 0, 2, // Payload (list header)
+			0, 10, 102, 105, 114, 115, 116, 32, 105, 116, 101, 109, 0, 11, 115, 101, 99, 111, 110, 100, 32, 105, 116, 101, 109, // Payload (list data)
+			0 // End tag
+		]);
+
+		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [no_type] buffer equality")) {
+			console.log(buf, expected);
+			return false;
+		}
+
+		return true;
+	},
+
+	encode_min() {
+		const tag = new Tag.Compound(null, [new Tag.Int("my_int", 42), new Tag.List("my_list", Tag.String, ["first item", "second item"])]);
+		const length = tag.size(false);
+
+		if(!assert_eq(length, 13 + 40 + 1, "Failed Tag.Compound [min] length equality"))
+			return false;
+
+		const buf = Buffer.alloc(length);
+		tag.write(false, buf);
+
+		const expected = Buffer.from([
+			3, 0, 6, 109, 121, 95, 105, 110, 116, 0, 0, 0, 42, // Payload (int)
+			9, 0, 7, 109, 121, 95, 108, 105, 115, 116, 8, 0, 0, 0, 2, // Payload (list header)
+			0, 10, 102, 105, 114, 115, 116, 32, 105, 116, 101, 109, 0, 11, 115, 101, 99, 111, 110, 100, 32, 105, 116, 101, 109, // Payload (list data)
+			0 // End tag
+		]);
+
+		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [min] buffer equality")) {
+			console.log(buf, expected);
+			return false;
+		}
+
+		return true;
+	},
+
+	encode_empty() {
+		const tag = new Tag.Compound(null, []);
+		const length = tag.size(false);
+
+		if(!assert_eq(length, 1, "Failed Tag.Compound [empty] length equality"))
+			return false;
+
+		const buf = Buffer.alloc(length);
+		tag.write(false, buf);
+
+		const expected = Buffer.from([
+			0, // Payload (end tag)
+		]);
+
+		if(!assert_eq_iter(buf, expected, "Failed Tag.Compound [empty] buffer equality")) {
 			console.log(buf, expected);
 			return false;
 		}

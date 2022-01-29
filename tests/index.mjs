@@ -20,7 +20,7 @@ const loading = [
 	load_tests("tags/byte_array.mjs"),
 	load_tests("tags/string.mjs"),
 	load_tests("tags/list.mjs"),
-	// load_tests("tags/compound.mjs"),
+	load_tests("tags/compound.mjs"),
 	load_tests("tags/int_array.mjs"),
 	load_tests("tags/long_array.mjs")
 ];
