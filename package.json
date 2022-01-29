@@ -1,0 +1,12 @@
+{
+	"name": "nbt",
+	"description": "A simple NBT reader / writer for Minecraft applications",
+	"version": "0.1.0",
+	"author": "Thatguyjs",
+
+	"main": "tests/index.mjs",
+
+	"scripts": {
+		"test": "node tests/index.mjs"
+	}
+}
