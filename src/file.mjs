@@ -1,5 +1,6 @@
 import Tag from "./tag.mjs";
 
+import fs from "fs";
 import pfs from "fs/promises";
 import zlib from "zlib";
 
@@ -12,15 +13,10 @@ const File = {
 
 		if(!compression || compression === 'none')
 			data = buffer;
-		else if(compression === 'gzip' || compression === 'zlib' || compression === 'deflate') {
-			data = await new Promise((res, rej) => {
-				zlib.unzip(buffer, (err, result) => {
-					if(err) rej(err);
-					else res(result);
-				});
-			});
-		}
-		else throw new Error(`Invalid compression type: ${compression}`);
+		else if(compression === 'gzip' || compression === 'zlib' || compression === 'deflate')
+			data = zlib.unzipSync(buffer);
+		else
+			throw new Error(`Invalid compression type: ${compression}`);
 
 		return this.read_data(data);
 	},
@@ -43,6 +39,36 @@ const File = {
 			tags = tags[0].payload;
 
 		return tags;
+	},
+
+	// Write tags to a file
+	write_tags: function(tags, filepath, { compression='gzip', sync=false }) {
+		if(!(tags instanceof Tag.Compound))
+			tags = new Tag.Compound(null, tags);
+
+		let buffer = Buffer.alloc(tags.size());
+		tags.write(true, buffer);
+
+		if(compression === 'gzip')
+			buffer = zlib.gzipSync(buffer);
+		else if(compression === 'zlib' || compression === 'deflate')
+			buffer = zlib.deflateSync(buffer);
+		else if(compression && compression !== 'none')
+			throw new Error(`Invalid compression type: ${compression}`);
+
+		return sync ?
+			this.write_buffer_sync(buffer, filepath) :
+			this.write_buffer(buffer, filepath);
+	},
+
+	// Write an NBT buffer to a file
+	write_buffer: async function(buffer, filepath) {
+		return pfs.writeFile(filepath, buffer);
+	},
+
+	// Same as write_buffer() but synchronous
+	write_buffer_sync: function(buffer, filepath) {
+		return fs.writeFileSync(filepath, buffer);
 	}
 };
 

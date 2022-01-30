@@ -369,7 +369,7 @@ const Tag = {
 			if(write_type) offset = buffer.writeUint8(8, offset);
 			if(this.name) offset = write_name(this.name, buffer, offset);
 
-			offset = buffer.writeUint16BE(this.payload.length, offset);
+			offset = buffer.writeUint16BE(Buffer.byteLength(this.payload, 'utf8'), offset);
 			return offset + buffer.write(this.payload, offset);
 		}
 
@@ -377,7 +377,7 @@ const Tag = {
 			let header = type ? 1 : 0;
 			if(this.name) header += 2 + this.name.length;
 
-			return header + 2 + this.payload.length;
+			return header + 2 + Buffer.byteLength(this.payload, 'utf8');
 		}
 	},
 

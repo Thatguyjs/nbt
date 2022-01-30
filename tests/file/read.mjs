@@ -21,8 +21,8 @@ function check_tag(tag, expected, ...message) {
 
 
 export default {
-	read_hello_world() {
-		const buffer = fs.readFileSync('tests/hello_world.nbt');
+	read_hello_world(path='tests/hello_world.nbt') {
+		const buffer = fs.readFileSync(path);
 		const root = File.read_data(buffer)[0];
 
 		assert(root instanceof Tag.Compound, "Failed File.read_data [hello_world] tag equality");
@@ -36,8 +36,8 @@ export default {
 		return true;
 	},
 
-	read_bigtest() {
-		const buffer = zlib.unzipSync(fs.readFileSync('tests/bigtest.nbt'));
+	read_bigtest(path='tests/bigtest.nbt') {
+		const buffer = zlib.unzipSync(fs.readFileSync(path));
 		const root = File.read_data(buffer)[0];
 
 		function equation_nums() {

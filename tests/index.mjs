@@ -24,7 +24,8 @@ const loading = [
 	load_tests("tags/int_array.mjs"),
 	load_tests("tags/long_array.mjs"),
 
-	load_tests("file/read.mjs")
+	load_tests("file/read.mjs"),
+	load_tests("file/write.mjs")
 ];
 
 
