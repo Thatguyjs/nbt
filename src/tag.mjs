@@ -72,11 +72,11 @@ function class_from_type(type) {
 
 const Tag = {
 	// Read the next tag from a buffer
-	read_tag: function(buffer, offset=0, read_type=true, read_name=true) {
+	read_tag: function(buffer, offset=0, read_name=true) {
 		const tag_class = class_from_type(buffer[offset]);
 		if(!tag_class) return null;
 
-		return tag_class.read(buffer, offset, read_type, read_name);
+		return tag_class.read(buffer, offset, true, read_name);
 	},
 
 
