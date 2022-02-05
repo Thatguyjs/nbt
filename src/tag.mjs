@@ -116,14 +116,14 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(1, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			return buffer.writeInt8(this.payload, offset);
 		}
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 1;
 		}
@@ -150,14 +150,14 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(2, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			return buffer.writeInt16BE(this.payload, offset);
 		}
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 2;
 		}
@@ -184,14 +184,14 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(3, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			return buffer.writeInt32BE(this.payload, offset);
 		}
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 4;
 		}
@@ -218,14 +218,14 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(4, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			return buffer.writeBigInt64BE(this.payload, offset);
 		}
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 8;
 		}
@@ -252,14 +252,14 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(5, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			return buffer.writeFloatBE(this.payload, offset);
 		}
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 4;
 		}
@@ -286,14 +286,14 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(6, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			return buffer.writeDoubleBE(this.payload, offset);
 		}
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 8;
 		}
@@ -325,7 +325,7 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(7, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			offset = buffer.writeInt32BE(this.payload.length, offset);
 			return offset + this.payload.copy(buffer, offset);
@@ -333,7 +333,7 @@ const Tag = {
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 4 + this.payload.length;
 		}
@@ -367,7 +367,7 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(8, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			offset = buffer.writeUint16BE(Buffer.byteLength(this.payload, 'utf8'), offset);
 			return offset + buffer.write(this.payload, offset);
@@ -375,7 +375,7 @@ const Tag = {
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 2 + Buffer.byteLength(this.payload, 'utf8');
 		}
@@ -435,7 +435,7 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(9, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			offset = buffer.writeUint8(this.item_type, offset);
 			offset = buffer.writeInt32BE(this.payload.length, offset);
@@ -448,7 +448,7 @@ const Tag = {
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			let sum = this.payload.reduce((prev, curr) => prev + curr.size(false), 0);
 			return header + 5 + sum;
@@ -495,7 +495,7 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(10, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			for(let p in this.payload)
 				offset = this.payload[p].write(true, buffer, offset);
@@ -505,7 +505,7 @@ const Tag = {
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			let sum = 0;
 			for(let p in this.payload)
@@ -548,7 +548,7 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(11, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			offset = buffer.writeInt32BE(this.payload.length, offset);
 			for(let p in this.payload)
@@ -559,7 +559,7 @@ const Tag = {
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 4 + this.payload.length * 4;
 		}
@@ -603,7 +603,7 @@ const Tag = {
 
 		write(write_type, buffer, offset=0) {
 			if(write_type) offset = buffer.writeUint8(12, offset);
-			if(this.name) offset = write_name(this.name, buffer, offset);
+			if(this.name !== null) offset = write_name(this.name, buffer, offset);
 
 			offset = buffer.writeInt32BE(this.payload.length, offset);
 			for(let p in this.payload)
@@ -614,7 +614,7 @@ const Tag = {
 
 		size(type=true) {
 			let header = type ? 1 : 0;
-			if(this.name) header += 2 + this.name.length;
+			if(this.name !== null) header += 2 + this.name.length;
 
 			return header + 4 + this.payload.length * 8;
 		}

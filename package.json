@@ -1,7 +1,7 @@
 {
 	"name": "nbt",
 	"description": "A simple NBT reader / writer for Minecraft applications",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"author": "Thatguyjs",
 
 	"main": "src/lib.mjs",
